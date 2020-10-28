@@ -1,0 +1,14 @@
+* {
+	box-sizing: border-box;
+	margin: 0;
+  padding: 0;
+}
+
+#main{
+  display: inline-block;
+  outline: 0px;
+  margin: 50px auto;
+  width: 50%;
+  min-width: 300px;
+  font-size: 20px;
+}
