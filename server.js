@@ -2,8 +2,8 @@ const path = require('path');
 const http = require('http');
 const express = require('express');
 const socketio = require('socket.io');
-const formatMessage = require('./utils/messages');
-const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users');
+//const formatMessage = require('./utils/messages');
+const { userJoin, getCurrentUser, userLeave, getUsers } = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,8 +13,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //Runs when client connects
 io.on('connection', socket => {
-  socket.on('joinRoom', ({ username, room }) => {
-    const user = userJoin(socket.id, username, room);
+  socket.on('joinDoc', ({ username }) => {
+    const user = userJoin(socket.id, username);
 
     socket.join(user.room);
     //wellcome user
@@ -34,22 +34,22 @@ io.on('connection', socket => {
 
     io.emit('MSG', formatMessage(user.username, msg));
   });
-  //runs when client disconnects 
-  socket.on('disconnect', () => {
-    const user = userLeave(socket.id);
+//   //runs when client disconnects 
+//   socket.on('disconnect', () => {
+//     const user = userLeave(socket.id);
 
-    if (user) {
-      io.emit('MSG', formatMessage('Admin', `${user.username} has left the chat`));
-    }    
+//     if (user) {
+//       io.emit('MSG', formatMessage('Admin', `${user.username} has left the chat`));
+//     }    
 
-    //send users and room info
-    io.to(user.room).emit('roomUsers', {
-      room: user.room,
-      users: getRoomUsers(user.room)
-    });
-  });
-});
+//     //send users and room info
+//     io.to(user.room).emit('roomUsers', {
+//       room: user.room,
+//       users: getRoomUsers(user.room)
+//     });
+//   });
+ });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; 
 
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
