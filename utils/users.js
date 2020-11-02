@@ -29,6 +29,7 @@ function getUsers() {
 }
 
 module.exports = {
+  users,
   userJoin,
   getCurrentUser,
   userLeave,

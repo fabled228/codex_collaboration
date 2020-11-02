@@ -7,8 +7,22 @@
 #main{
   display: inline-block;
   outline: 0px;
-  margin: 50px auto;
+  margin: 50px 25%;
   width: 50%;
   min-width: 300px;
   font-size: 20px;
+  position: absolute;
+}
+
+#users{
+  position: fixed;
+  top: 20px;
+  left: 20px;
+}
+
+.caret{
+  display: inline-block;
+  background-color: tomato;
+  width: 2px;
+  height: 15px;
 }

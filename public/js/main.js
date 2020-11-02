@@ -1,7 +1,7 @@
 const chatForm = document.getElementById('chat-form');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
-const userList = document.getElementById('users');
+const userList = document.getElementById('users-list');
 //get username and room from url
 
 const { username } = Object.fromEntries(new URLSearchParams(location.search));
@@ -9,10 +9,10 @@ const { username } = Object.fromEntries(new URLSearchParams(location.search));
 const socket = io();
 
 //join document
-socket.emit('joinDoc', { username })
+socket.emit('userJoin', username)
 
-//get users
-socket.on('docUsers', ({ users }) => {
+//add users to list
+socket.on('docUsers', users => {
   outputUsers(users);
 })
 
