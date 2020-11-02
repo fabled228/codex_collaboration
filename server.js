@@ -19,7 +19,7 @@ io.on('connection', socket => {
     io.emit('docUsers', users)
   });
   socket.on('cursorSend', cursorData => {
-    socket.emit('showCaret', cursorData)
+    io.emit('showCaret', cursorData)
   })
   //runs when client disconnects 
   socket.on('disconnect', () => {

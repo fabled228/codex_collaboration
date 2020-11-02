@@ -1,4 +1,4 @@
-const events = ["mousedown", "keydown" ]
+const events = ["mouseup", "keyup"]
 const currentPosShow = document.getElementById("caretposition");
 const userList = document.getElementById('users-list');
 const main = document.getElementById("main");
@@ -18,20 +18,29 @@ socket.on('docUsers', users => {
 })
 
 socket.on('showCaret', ({caretPos, username, parentIndex, textIndex, id}) =>{
+  console.log(id);
   const caret = document.getElementById(id);
   const usedParagraph = main.children[parentIndex];
+  const textNodes = [...usedParagraph.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.parentNode === usedParagraph)
+  const textNode = textNodes[textIndex];
+  const replacement = textNode.splitText(caretPos);
   if (caret){
     caret.remove();
     usedParagraph.normalize();
   }
-  const textNodes = [...usedParagraph.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.parentNode === usedParagraph)
-  console.log(textNodes)
-  const textNode = textNodes[textIndex];
-  const replacement = textNode.splitText(caretPos);
   const div = document.createElement('div');
+  const userNameLabel = document.createElement('span');
+  userNameLabel.contentEditable = false;
+  div.contentEditable = false;
+  userNameLabel.id = "userLabel";
+  userNameLabel.textContent = username;
   div.className = "caret";
   div.id = id;
-  textNode.parentNode.insertBefore(div, replacement);
+  console.log(replacement);
+  console.dir(replacement);
+  div.appendChild(userNameLabel);
+  replacement.before(div);
+  console.log(div);
 })
 
 function onContentEditableChange() {
@@ -41,11 +50,8 @@ function onContentEditableChange() {
   const textNode = range.endContainer;
   const parent = textNode.parentElement;
   const textIndexs = [...parent.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.parentNode === parent)
-  console.log([...parent.childNodes]);
-  console.dir(textIndexs);
   const textIndex = textIndexs.indexOf(textNode);
   const parentIndex = [...main.children].indexOf(parent);
-  console.log(textIndex);
   // sending cursor pos everybody
   socket.emit('cursorSend', {caretPos, username, parentIndex, textIndex , id: socket.id});
   currentPosShow.textContent = caretPos;
