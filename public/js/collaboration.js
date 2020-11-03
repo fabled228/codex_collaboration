@@ -13,38 +13,45 @@ socket.emit('userJoin', username)
 //add users to list
 socket.on('docUsers', users => {
   outputUsers(users);
-  console.log(users);
-  console.log('zxc');
 })
 
-socket.on('showCaret', ({caretPos, username, parentIndex, textIndex, id}) =>{
-  console.log(id);
+socket.on('showCaret', ({caretPos, username, parentIndex, textIndex, id, key}) =>{
   const caret = document.getElementById(id);
   const usedParagraph = main.children[parentIndex];
   const textNodes = [...usedParagraph.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.parentNode === usedParagraph)
   const textNode = textNodes[textIndex];
-  const replacement = textNode.splitText(caretPos);
-  if (caret){
-    caret.remove();
-    usedParagraph.normalize();
+
+
+  if (key) {
+    if (id !== socket.id) {
+      if (key === 'Backspace') {
+        textNode.textContent = textNode.textContent.substring(0, textNode.textContent.length - 1)
+      } else {
+        textNode.textContent += key;
+      }
+    }
   }
+
+  const replacement = textNode.splitText(caretPos);
   const div = document.createElement('div');
   const userNameLabel = document.createElement('span');
   userNameLabel.contentEditable = false;
   div.contentEditable = false;
-  userNameLabel.id = "userLabel";
+  userNameLabel.className = "userLabel";
   userNameLabel.textContent = username;
   div.className = "caret";
   div.id = id;
-  console.log(replacement);
-  console.dir(replacement);
   div.appendChild(userNameLabel);
   replacement.before(div);
-  console.log(div);
+
+  if (caret){
+    caret.remove();
+    usedParagraph.normalize();
+  }
 })
 
-function onContentEditableChange() {
-  const sel= window.getSelection();
+function onContentEditableChange(event) {
+  const sel = window.getSelection();
   const range = sel.getRangeAt(0);
   const caretPos = range.endOffset;
   const textNode = range.endContainer;
@@ -52,8 +59,14 @@ function onContentEditableChange() {
   const textIndexs = [...parent.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.parentNode === parent)
   const textIndex = textIndexs.indexOf(textNode);
   const parentIndex = [...main.children].indexOf(parent);
-  // sending cursor pos everybody
-  socket.emit('cursorSend', {caretPos, username, parentIndex, textIndex , id: socket.id});
+
+  let key;
+
+  if ((event.keyCode >= 48 && event.keyCode <= 90 || event.keyCode === 8 || event.keyCode === 32) && !event.metaKey) {
+    key = event.key;
+  }
+
+  socket.emit('cursorSend', {caretPos, username, parentIndex, textIndex , id: socket.id, key });
   currentPosShow.textContent = caretPos;
 }
 

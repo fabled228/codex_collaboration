@@ -15,7 +15,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 io.on('connection', socket => {
   socket.on('userJoin', username => {
     userJoin(socket.id, username);
-    console.log(users);
     io.emit('docUsers', users)
   });
   socket.on('cursorSend', cursorData => {

@@ -31,7 +31,7 @@
   user-select: none;
 }
 
-#userLabel{
+.userLabel{
   position: absolute;
   font-size: 0.5em;
   left: -50%;
